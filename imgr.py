@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import time
+from collections import Counter
 
 def createExamples():
     numberArrayExamples=open('numArEx.txt','a')
@@ -20,6 +21,7 @@ def createExamples():
              numberArrayExamples.write(lineToWrite)
 
 
+#this fn converts colored pixel into white or black ie threshold that pixel
 def threshold(imageArray):
     balanceAr = []
     newAr = imageArray
@@ -44,32 +46,37 @@ def threshold(imageArray):
                 eachPix[2]=0
                 eachPix[3]=255
     return newAr
-i=Image.open('images/numbers/0.1.png')
-iar=np.array(i)
 
-i2=Image.open('images/numbers/y0.4.png')
-iar2=np.array(i2)
 
-i3=Image.open('images/numbers/y0.5.png')
-iar3=np.array(i3)
+#this fn compare our image with the array of sample images which we have to compare in database
+def whatNumIsThis(filepath):
+	matchedArr=[]
+	loadDatabase=open('numArEx.txt','r').read()
+	loadDatabase=loadDatabase.split('\n')
 
-i4=Image.open('images/sentdex.png')
-iar4=np.array(i4)
+	i=Image.open(filepath)
+	iar=np.array(i)
+	iarl=iar.tolist()
 
-'''threshold(iar2)
-threshold(iar3)
-threshold(iar4)
+	inQuestion=str(iarl)
+	for eachExample in loadDatabase:
+		if len(eachExample)> 3:
+			splitEx=eachExample.split('::')
+			currentNum=splitEx[0]
+			currentArr=splitEx[1]
 
-fig=plt.figure()
-ax1=plt.subplot2grid((8,6),(0,0),rowspan=4,colspan=3)
-ax2=plt.subplot2grid((8,6),(4,0),rowspan=4,colspan=3)
-ax3=plt.subplot2grid((8,6),(0,3),rowspan=4,colspan=3)
-ax4=plt.subplot2grid((8,6),(4,3),rowspan=4,colspan=3)
+			eachPixEx=currentArr.split('],')
+			eachPixInQ=inQuestion.split('],')
+			x=0
+			while x<len(eachPixEx):
+				if eachPixEx[x]==eachPixInQ[x]:
+					matchedArr.append(int(currentNum))
 
-ax1.imshow(iar)
-ax2.imshow(iar2)
-ax3.imshow(iar3)
-ax4.imshow(iar4)
+				x+=1;
 
-plt.show()'''
-  
+	print matchedArr
+	x=Counter(matchedArr)
+	print x
+
+whatNumIsThis('images/numbers/2.2.png')
+					
